@@ -10,10 +10,6 @@
   "scripts": {
     "test": "mocha"
   },
-  "keywords": [
-    "plum",
-    "yeoman-generator"
-  ],
   "contributors": [
     {
       "name": "Dave Lunny",
@@ -43,5 +39,24 @@
     "eslint-plugin-jsx-a11y": "^2.0.1",
     "eslint-plugin-react": "^5.2.2",
     "mocha": "*"
-  }
+  },
+  "keywords": [
+    "plum",
+    "yeoman-generator"
+  ],
+  "files": [
+    "app",
+    "base",
+    "config",
+    "core",
+    "export",
+    "function",
+    "hotfix",
+    "layout",
+    "mixin",
+    "module",
+    "page",
+    "unit",
+    "vendor"
+  ]
 }
