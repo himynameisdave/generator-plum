@@ -11,6 +11,8 @@ module.exports = {
 
     initializing: function () {
 
+      console.log("yoyoyoyo");
+
       //  update the generator if that's applicable
       update({
         packageName:    pkg.name,
