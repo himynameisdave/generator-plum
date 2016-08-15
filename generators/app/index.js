@@ -10,7 +10,17 @@ const chalk   = require('chalk');
 const banner  = require('../../utils/banner');
 const prompts = require('../../utils/_prompts');
 const update  = require('../../utils/update');
+const cssDirWarn = require('../../utils/cssDirWarn');
+
 // const pkg     = require('../../package.json');
+
+//  TODO: break off later
+const doPrompt = (promptType) => {
+  return ans => {
+    console.log("prompt over, heres ans", ans);
+    this.config.set('promptType');
+  };
+};
 
 module.exports = yeoman.generators.Base.extend({
   //  Wrap methods in prompting so they run before other Yeoman lifecycle methods
@@ -21,6 +31,7 @@ module.exports = yeoman.generators.Base.extend({
     banner() {
       this.log(banner());
     },
+    cssDirWarn,
     //  Will create a `yo-rc.json` file if none exists
     initConfig() {
       this.config.save();
@@ -31,13 +42,18 @@ module.exports = yeoman.generators.Base.extend({
       prompts.language.apply(this)
         .then(ans => {
           console.log("prompt over, heres ans", ans);
-          // this.config.
+          // this.config.set();
+          return prompts.testing.apply(this);
+        })
+        .then(ans => {
+          // this.config.set();
+          return prompts.localConfigs.apply(this);
         })
         .catch(e => {
           console.warn(e);
         })
         .then(() => {
-          
+          done();
         });
     },
   },

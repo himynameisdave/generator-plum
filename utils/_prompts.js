@@ -38,7 +38,7 @@ const prompts = {
       this.prompt({
         type: 'confirm',
         name: 'localConfigs',
-        message: 'Would you like to ',
+        message: 'Would you like to have local configs for your modules/units/pages etc. ?',
         default: false
       }, answer => {
         if (!answer) rej(new Error('Error with testing prompt!'));
