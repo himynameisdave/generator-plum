@@ -41,7 +41,7 @@ const prompts = {
         message: 'Would you like to have local configs for your modules/units/pages etc. ?',
         default: false
       }, answer => {
-        if (!answer) rej(new Error('Error with testing prompt!'));
+        if (!answer) rej(new Error('Error with localConfigs prompt!'));
         res(answer.localConfigs);
       });
     });
@@ -54,7 +54,19 @@ const prompts = {
         message: 'Which generator would you like to run?',
         choices: generatorsList
       }, answer => {
-        if (!answer) rej(new Error('Error with testing prompt!'));
+        if (!answer) rej(new Error('Error with listGenerators prompt!'));
+        res(answer);
+      });
+    });
+  },
+  askName(type) {
+    return new Promise((res, rej) => {
+      this.prompt({
+        type: 'question',
+        name: 'name',
+        message: `What would you like to name this ${type}?`,
+      }, answer => {
+        if (!answer) rej(new Error('Error with askName prompt!'));
         res(answer);
       });
     });

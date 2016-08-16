@@ -1,9 +1,6 @@
-/***
-  *
-  *       Top level `app` generator
-  *
-  *       This is the generator that is hit when the user runs
-  *
+/**
+  *    Top level `app` generator
+  *    This is the generator that is hit when the user runs
   */
 const yeoman  = require('yeoman-generator');
 const chalk   = require('chalk');
@@ -11,6 +8,12 @@ const banner  = require('../../utils/banner');
 const prompts = require('../../utils/_prompts');
 const update  = require('../../utils/update');
 const cssDirWarn = require('../../utils/cssDirWarn');
+const defaultConfig = {
+  language: 'sass',
+  testing: false,
+  localConfigs: false
+};
+
 
 module.exports = yeoman.generators.Base.extend({
   //  Wrap methods in prompting so they run before other Yeoman lifecycle methods
@@ -24,36 +27,41 @@ module.exports = yeoman.generators.Base.extend({
     cssDirWarn,
     //  Will create a `yo-rc.json` file if none exists
     initConfig() {
+      //  Sets defaults in case they aren't created
+      this.config.defaults(defaultConfig);
       this.config.save();
     },
     //  Prompt the user for language, testing, and localConfigs
     prompting() {
       const done = this.async();
-      //  TODO: smells like a use case for Promise.all...
+      //  Prompt for what language to use
       prompts.language.apply(this)
         .then(ans => {
           this.config.set('language', ans.toLowerCase());
+      //  Prompt for if user wants testing
           return prompts.testing.apply(this);
         })
         .then(ans => {
           this.config.set('testing', ans);
+      //  Prompt for if user wants localConfigs
           return prompts.localConfigs.apply(this);
         })
         .then(ans => {
           this.config.set('localConfigs', ans);
-        })
-        .catch(e => console.warn)
-        .then(() => {
           this.config.save();
+          done();
+        })
+        .catch(e => {
+          console.warn(e);
           done();
         });
     },
   },
   writing() {
-    this.log(chalk.green(`Plum initialized in ${process.cwd()}:`));
+    this.log(chalk.green(`\nPlum initialized in ${process.cwd()}:`));
   },
   install() {
     //  TODO: maybe a prompt for what they wanna name their default export?
-    this.composeWith('plum:export', {args: ['default']});
+    this.composeWith('plum:export', { args: ['default'] });
   }
 });
