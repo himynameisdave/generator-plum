@@ -12,16 +12,6 @@ const prompts = require('../../utils/_prompts');
 const update  = require('../../utils/update');
 const cssDirWarn = require('../../utils/cssDirWarn');
 
-// const pkg     = require('../../package.json');
-
-//  TODO: break off later
-const doPrompt = (promptType) => {
-  return ans => {
-    console.log("prompt over, heres ans", ans);
-    this.config.set('promptType');
-  };
-};
-
 module.exports = yeoman.generators.Base.extend({
   //  Wrap methods in prompting so they run before other Yeoman lifecycle methods
   prompting: {
@@ -39,41 +29,31 @@ module.exports = yeoman.generators.Base.extend({
     //  Prompt the user for language, testing, and localConfigs
     prompting() {
       const done = this.async();
+      //  TODO: smells like a use case for Promise.all...
       prompts.language.apply(this)
         .then(ans => {
-          console.log("prompt over, heres ans", ans);
-          // this.config.set();
+          this.config.set('language', ans.toLowerCase());
           return prompts.testing.apply(this);
         })
         .then(ans => {
-          // this.config.set();
+          this.config.set('testing', ans);
           return prompts.localConfigs.apply(this);
         })
-        .catch(e => {
-          console.warn(e);
+        .then(ans => {
+          this.config.set('localConfigs', ans);
         })
+        .catch(e => console.warn)
         .then(() => {
+          this.config.save();
           done();
         });
     },
   },
-  writing: {
-    app: function () {
-
-      console.log("yo momma");
-
-
-
-      // this.fs.copy(this.templatePath('_yo-rc.json'), this.destinationPath('.yo-rc.json'));
-
-      this.config.save();
-
-
-      this.log(chalk.green('Plum application initialized in ' + process.cwd() + '.'));
-    }
+  writing() {
+    this.log(chalk.green(`Plum initialized in ${process.cwd()}:`));
   },
-
-  install: function () {
+  install() {
+    //  TODO: maybe a prompt for what they wanna name their default export?
     this.composeWith('plum:export', {args: ['default']});
   }
 });
