@@ -36,18 +36,18 @@ module.exports = yeoman.generators.Base.extend({
       const done = this.async();
       //  Prompt for what language to use
       prompts.language.apply(this)
-        .then(ans => {
-          this.config.set('language', ans.toLowerCase());
+        .then(({ language }) => {
+          this.config.set('language', language.toLowerCase());
       //  Prompt for if user wants testing
           return prompts.testing.apply(this);
         })
-        .then(ans => {
-          this.config.set('testing', ans);
+        .then(({ testing }) => {
+          this.config.set('testing', testing);
       //  Prompt for if user wants localConfigs
           return prompts.localConfigs.apply(this);
         })
-        .then(ans => {
-          this.config.set('localConfigs', ans);
+        .then(({ localConfigs }) => {
+          this.config.set('localConfigs', localConfigs);
           this.config.save();
           done();
         })
