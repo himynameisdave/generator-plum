@@ -54,16 +54,13 @@ module.exports = yeoman.Base.extend({
   },
   end() {
     const done = this.async();
-
-    prompts.runGenerator.call(this, function(answer) {
-      if(answer) {
-        prompts.listGenerators.call(this, function(answer) {
-          this.composeWith('plum:' + answer);
+    prompts.runGenerator.call(this, (answer) => {
+      if (answer) {
+        prompts.listGenerators.call(this, (answer) => {
+          this.composeWith(`plum:${answer}`);
           done();
-        }.bind(this));
-      } else {
-        done();
-      }
-    }.bind(this));
+        });
+      } else { done(); }
+    });
   }
 });
