@@ -54,13 +54,34 @@ module.exports = yeoman.Base.extend({
   },
   end() {
     const done = this.async();
-    prompts.runGenerator.call(this, (answer) => {
-      if (answer) {
-        prompts.listGenerators.call(this, (answer) => {
-          this.composeWith(`plum:${answer}`);
+    //  Asks the user if they want to run another generator
+    _prompts.runGenerator.apply(this)
+      .then(ans => {
+        if (ans.run) {
+          return _prompts.listGenerators.apply(this);
+        } else {
+          console.log(chalk.magenta('\n  --- Goodbye for now! ---  \n'));
           done();
-        });
-      } else { done(); }
-    });
+          process.exit(0);
+        }
+      })
+      .then(ans => {
+        if (!ans) return;
+        console.log("\n\nteh responses", ans.generator);
+      })
+      .catch(e => {
+        console.warn(e);
+        done();
+      });
+
+
+    // prompts.runGenerator.call(this, (answer) => {
+    //   if (answer) {
+    //     prompts.listGenerators.call(this, (answer) => {
+    //       this.composeWith(`plum:${answer}`);
+    //       done();
+    //     });
+    //   } else { done(); }
+    // });
   }
 });

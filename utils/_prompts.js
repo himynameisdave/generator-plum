@@ -39,6 +39,14 @@ const prompts = {
       choices: generatorsList
     });
   },
+  runGenerator() {
+    return this.prompt({
+      type: 'confirm',
+      name: 'run',
+      message: 'Would you like to run another generator?',
+      default: true
+    });
+  },
   askName(type) {
     return this.prompt({
       type: 'question',
