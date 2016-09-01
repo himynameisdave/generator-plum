@@ -14,8 +14,7 @@ const defaultConfig = {
   localConfigs: false
 };
 
-
-module.exports = yeoman.generators.Base.extend({
+module.exports = yeoman.Base.extend({
   //  Wrap methods in prompting so they run before other Yeoman lifecycle methods
   prompting: {
     //  Check if we need to update the generator and notify the user if they are out of date
@@ -34,31 +33,31 @@ module.exports = yeoman.generators.Base.extend({
     //  Prompt the user for language, testing, and localConfigs
     prompting() {
       const done = this.async();
-      //  Prompt for what language to use
       prompts.language.apply(this)
         .then(ans => {
-          this.config.set('language', ans.toLowerCase());
-      //  Prompt for if user wants testing
+          this.config.set('language', ans.language.toLowerCase());
+          this.config.save();
           return prompts.testing.apply(this);
         })
         .then(ans => {
-          this.config.set('testing', ans);
-      //  Prompt for if user wants localConfigs
+          this.config.set('testing', ans.testing);
+          this.config.save();
           return prompts.localConfigs.apply(this);
         })
         .then(ans => {
-          this.config.set('localConfigs', ans);
+          this.config.set('localConfigs', ans.localConfigs);
           this.config.save();
           done();
         })
         .catch(e => {
-          console.warn(e);
+          console.warn(e)
+          this.config.save();
           done();
         });
     },
   },
   writing() {
-    this.log(chalk.green(`\nPlum initialized in ${process.cwd()}:`));
+    this.log(chalk.green(`\nPlum config initialized in ${process.cwd()}:`));
   },
   install() {
     //  TODO: maybe a prompt for what they wanna name their default export?

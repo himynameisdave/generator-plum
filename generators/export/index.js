@@ -1,10 +1,11 @@
 const fs = require('fs-extra');
 const path = require('path');
 const yeoman  = require('yeoman-generator');
+const chalk = require('chalk');
 const prompts = require('../../utils/prompts.js');
 const _prompts = require('../../utils/_prompts.js');
 
-module.exports = yeoman.generators.Base.extend({
+module.exports = yeoman.Base.extend({
   type: 'export',
   location: 'exports',
   stylesheets: ['export'],
@@ -27,23 +28,14 @@ module.exports = yeoman.generators.Base.extend({
         this.name = answerName;
         done();
       })
-      .catch(console.warn)
+      .catch(e => {
+        console.warn(e);
+        done();
+      });
     } else { done(); }
   },
-
-//  TODO: maybe remove this...
-  configuring: function () {
-    this.filePaths = this.stylesheets.map(function(file) {
-      return {
-        dest: this.location + '/' + this.name + '.scss',
-        src: '_' + file + '.scss'
-      };
-    }.bind(this));
-  },
-
-
+  //  TODO: if this is going to be used in every subgenny, break into module
   writing() {
-//  TODO: if this is going to be used in every subgenny, break into module
     //  Stores the language the user wants to use (Sass or Less)
     const lang = this.config.get('language');
     if (!lang) {
@@ -51,35 +43,17 @@ module.exports = yeoman.generators.Base.extend({
       this.composeWith('plum');
       return;
     }
-
-
-    const reader = (read, write) => {
-      const paths = {
-        read: path.join(__dirname, '/templates/', read),
-        write: path.resolve(process.cwd(), write)
-      };
-      console.log(`\n\n${paths.read}\n\n${paths.write}\n\n`);
-      fs.copySync(paths.read, paths.write);
-    };
-
-    //  the actual extension to be used based on the language
-    const ext = lang === 'less' ? '.less' : '.scss';
-    //  TODO: this could be reduced to a single .map
-    this.stylesheets.map(file => ({
-      dest: `${this.location}/${this.name}${ext}`,
-      src: `_${file}${ext}`
-    })).map(path => {
-
-      reader(path.src, path.dest);
-
-      this.fs.copy(
-        this.templatePath(path.src),
-        this.destinationPath(path.dest)
-      )
+    //  Iterate over the stylesheets and copy the template to the new file destination
+    this.stylesheets.map(file => {
+      fs.copySync(
+        path.join(__dirname, '/templates/', `_${file}`), // read
+        path.resolve(process.cwd(), `${this.location}/${this.name}.${lang}`) // write
+      );
+      return console.log(chalk.yellow(`Created file ${this.location}/${this.name}.${lang}`));
     });
   },
-  end: function () {
-    var done = this.async();
+  end() {
+    const done = this.async();
 
     prompts.runGenerator.call(this, function(answer) {
       if(answer) {
